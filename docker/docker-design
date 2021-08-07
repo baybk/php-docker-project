@@ -1,0 +1,22 @@
+PHP service (php-service)
+    from: php7.3-fpm
+    port: 9000
+    update-image:
+        install php ext mysqli
+        install php ext pdo-mysql -> ket noi vs mysql
+    workdir: /home/sites/site1
+
+HTTPD service (http-service)
+    from: http:latest
+    port: 80
+    config: file /user/local/apache2/conf/httpd.conf
+        workdir: /home/sites/site1
+
+MYSQL service (mysql-service)
+    from: mysql:latest
+    port: 3306
+    config: file /etc/mysql/my.cnf
+        default-authentication-plugin=mysql_native_password
+    db: 
+        db-storage: /var/lib/mysql
+    

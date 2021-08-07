@@ -1,0 +1,65 @@
+version: "3"
+
+#NETWORKS
+networks:
+  my-network:
+    driver: bridge
+
+#VOLUMES
+volumes:
+  my-volume:
+    driver_opts:
+      device: /Volumes/DATA2/PersonalWork/StudyProject/PhpDockerProject/web1-src/
+      type: bind
+
+services: 
+  php-service:
+    container_name: php-service
+    build:
+      dockerfile: Dockerfile
+      context: ./php/
+    volumes: 
+      - ${MY_VOLUME}:/home/sites/site1/
+    # ports
+    # enviroment
+    networks: 
+      - my-network
+    # links
+    restart: always
+    # hostname: php
+  
+  httpd-service:
+    container_name: httpd-service
+    image: "httpd:latest"
+    volumes: 
+      - ${MY_VOLUME}:/home/sites/site1/
+      - ./httpd.conf:/usr/local/apache2/conf/httpd.conf
+    ports:
+      - "81:80"
+      - "444:443"
+    # enviroment
+    networks: 
+      - my-network
+    # links
+    restart: always
+  
+  mysql-service:
+    container_name: mysql-service
+    image: "mysql:latest"
+    volumes:
+      - ./db-storage/:/var/lib/mysql/
+      - ./my.cnf:/etc/mysql/my.cnf
+    # ports
+    environment: 
+      - MYSQL_ROOT_PASSWORD=site1-root-password
+      - MYSQL_DATABASE=site1-db
+      - MYSQL_USER=site1-user
+      - MYSQL_PASSWORD=site1-password
+    networks: 
+      - my-network
+    # links
+    restart: always
+
+
+
+  
